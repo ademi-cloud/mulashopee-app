@@ -8,7 +8,7 @@ export const supabaseConfigured = Boolean(url && anonKey)
 // Bila env belum diisi, guna URL palsu supaya landing page masih boleh dibuka.
 export const supabase = createClient(url ?? 'http://localhost:54321', anonKey ?? 'missing-key')
 
-export const checkoutUrl = (import.meta.env.VITE_BCL_CHECKOUT_URL as string | undefined) ?? '#harga'
+export const checkoutUrl = (import.meta.env.VITE_BCL_CHECKOUT_URL as string | undefined) || '#harga'
 
 export type Profile = {
   id: string
