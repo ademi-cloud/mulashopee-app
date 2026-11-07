@@ -38,10 +38,12 @@ function str(v: unknown): string | null {
 }
 
 function normaliseStatus(v: unknown): 'paid' | 'failed' | 'pending' {
+  // Webhook ini hanya dilanggan untuk event "payment-success", jadi anggap
+  // berbayar kecuali payload jelas menyatakan gagal atau masih menunggu.
   const s = String(v ?? '').toLowerCase()
-  if (['paid', 'success', 'successful', 'completed', '1', 'true'].includes(s)) return 'paid'
-  if (['failed', 'fail', 'cancelled', 'canceled', 'expired', '3'].includes(s)) return 'failed'
-  return 'pending'
+  if (/fail|cancel|expire|reject/.test(s)) return 'failed'
+  if (/pending|new|unpaid/.test(s)) return 'pending'
+  return 'paid'
 }
 
 function timingSafeEqual(a: string, b: string): boolean {
