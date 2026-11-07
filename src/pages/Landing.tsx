@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import Logo from '../components/Logo'
-import { checkoutUrl } from '../lib/supabase'
+import { checkoutUrl, coachingUrl, serviceUrl } from '../lib/supabase'
 
 const modules = [
   { n: '01', title: 'Buka Kedai', text: 'Daftar Shopee Seller, setting kedai, shipping dan bank dengan betul dari hari pertama.' },
@@ -51,18 +51,38 @@ export default function Landing() {
       </section>
 
       <section id="harga" className="container section">
-        <div className="card price-card">
-          <div>
-            <h2>Satu bayaran, akses penuh</h2>
+        <h2>Pilih cara awak nak mula</h2>
+        <div className="grid-3">
+          <div className="card offer offer-main">
+            <span className="pill">Paling popular</span>
+            <h3>Shopee AI Toolkit</h3>
+            <strong className="price">RM97</strong>
             <ul className="checklist">
               {perks.map((p) => <li key={p}>{p}</li>)}
             </ul>
-          </div>
-          <div className="price-box">
-            <span className="muted">Harga pelancaran</span>
-            <strong className="price">RM97</strong>
-            <a className="btn btn-primary btn-lg" href={checkoutUrl}>Beli sekarang</a>
+            <a className="btn btn-primary" href={checkoutUrl}>Beli sekarang</a>
             <small className="muted">Guna email yang sama semasa bayar dan daftar akaun.</small>
+          </div>
+          <div className="card offer">
+            <h3>Coaching</h3>
+            <strong className="price">RM2,000 <span className="price-sub">/ RM5,000</span></strong>
+            <ul className="checklist">
+              <li>Personal Coaching — RM2,000</li>
+              <li>Group Coaching — RM5,000</li>
+              <li>Semakan kedai & pelan tindakan</li>
+              <li>Termasuk akses Shopee AI Toolkit</li>
+            </ul>
+            <a className="btn btn-outline" href={coachingUrl}>Daftar coaching</a>
+          </div>
+          <div className="card offer">
+            <h3>Service</h3>
+            <strong className="price price-text">Tempah temujanji</strong>
+            <ul className="checklist">
+              <li>Kami urus kedai Shopee awak</li>
+              <li>Isi borang dengan maklumat kedai</li>
+              <li>Pasukan kami akan hubungi awak</li>
+            </ul>
+            <a className="btn btn-outline" href={serviceUrl}>Isi borang tempahan</a>
           </div>
         </div>
       </section>
