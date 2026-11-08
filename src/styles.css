@@ -146,3 +146,5 @@ input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
 .module-head .section-label { margin: 0; }
 .upsell { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 10px; background: #fffaf5; border-color: #fed7aa; padding: 16px 18px; flex-wrap: wrap; }
 .list-item.locked { opacity: .6; }
+.badge-inline { align-self: flex-start; }
+.offer p.muted { flex: 1; }

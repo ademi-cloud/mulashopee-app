@@ -3,6 +3,9 @@ import { useAuth } from '../lib/auth'
 import { useCatalog } from '../lib/catalog'
 import { greeting, longDate } from '../lib/format'
 
+// Harga asal untuk dipotong (harga promosi semasa ada dalam products.price_label)
+const WAS_PRICE: Record<string, string> = { toolkit: 'RM97' }
+
 export default function MemberHome() {
   const { profile } = useAuth()
   const { lessons, products } = useCatalog()
@@ -41,9 +44,16 @@ export default function MemberHome() {
                 {has ? (
                   <Link className="btn btn-outline" to="/ahli/video">✓ Dimiliki — buka</Link>
                 ) : p.available && p.checkout_url ? (
-                  <a className="btn btn-primary" href={p.checkout_url}>Dapatkan {p.price_label ? `· ${p.price_label}` : ''}</a>
+                  <>
+                    {p.price_label && (
+                      <strong className="price">
+                        {p.price_label} {WAS_PRICE[p.slug] && <s className="price-sub">{WAS_PRICE[p.slug]}</s>}
+                      </strong>
+                    )}
+                    <a className="btn btn-primary" href={p.checkout_url}>Dapatkan</a>
+                  </>
                 ) : (
-                  <span className="badge">Akan datang</span>
+                  <span className="badge badge-inline">Akan datang</span>
                 )}
               </div>
             )
