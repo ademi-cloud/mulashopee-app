@@ -54,9 +54,10 @@ export default function Landing() {
         <h2>Pilih cara awak nak mula</h2>
         <div className="grid-3">
           <div className="card offer offer-main">
-            <span className="pill">Paling popular</span>
+            <span className="pill">Super Early Bird · tempat terhad</span>
             <h3>Shopee AI Toolkit</h3>
-            <strong className="price">RM97</strong>
+            <strong className="price">RM17 <s className="price-sub">RM97</s></strong>
+            <small className="muted">Early Bird RM47 · Harga biasa RM97</small>
             <ul className="checklist">
               {perks.map((p) => <li key={p}>{p}</li>)}
             </ul>
