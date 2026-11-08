@@ -52,10 +52,12 @@ export default function Landing() {
 
       <section id="harga" className="container section">
         <h2>Pilih cara awak nak mula</h2>
+        <p className="muted section-lead">Tiga peringkat: belajar sendiri, kami bimbing, atau kami uruskan untuk awak.</p>
         <div className="grid-3">
           <div className="card offer offer-main">
-            <span className="pill">Super Early Bird · tempat terhad</span>
+            <span className="tier">Do it yourself</span>
             <h3>Shopee AI Toolkit</h3>
+            <span className="pill">Super Early Bird · tempat terhad</span>
             <strong className="price">RM17 <s className="price-sub">RM97</s></strong>
             <small className="muted">Early Bird RM47 · Harga biasa RM97</small>
             <ul className="checklist">
@@ -65,7 +67,8 @@ export default function Landing() {
             <small className="muted">Guna email yang sama semasa bayar dan daftar akaun.</small>
           </div>
           <div className="card offer">
-            <h3>Coaching</h3>
+            <span className="tier">Done with you</span>
+            <h3>Personal Coaching</h3>
             <strong className="price">RM2,000 <span className="price-sub">/ RM5,000</span></strong>
             <ul className="checklist">
               <li>Personal Coaching — RM2,000</li>
@@ -73,17 +76,18 @@ export default function Landing() {
               <li>Semakan kedai & pelan tindakan</li>
               <li>Termasuk akses Shopee AI Toolkit</li>
             </ul>
-            <a className="btn btn-outline" href={coachingUrl}>Daftar coaching</a>
+            <a className="btn btn-outline" href={coachingUrl}>Bayar & daftar coaching</a>
           </div>
           <div className="card offer">
-            <h3>Service</h3>
-            <strong className="price price-text">Tempah temujanji</strong>
+            <span className="tier">Done for you</span>
+            <h3>Service Marketing Shopee</h3>
+            <strong className="price">2%–5% <span className="price-sub">daripada jualan</span></strong>
             <ul className="checklist">
-              <li>Kami urus kedai Shopee awak</li>
-              <li>Isi borang dengan maklumat kedai</li>
-              <li>Pasukan kami akan hubungi awak</li>
+              <li>Kami urus marketing & iklan kedai Shopee awak</li>
+              <li>Isi borang percuma dengan maklumat kedai</li>
+              <li>Kami hubungi untuk bincang & cadangkan kadar</li>
             </ul>
-            <a className="btn btn-outline" href={serviceUrl}>Isi borang tempahan</a>
+            <a className="btn btn-outline" href={serviceUrl}>Tempah perbincangan percuma</a>
           </div>
         </div>
       </section>
