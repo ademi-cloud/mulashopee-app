@@ -13,7 +13,7 @@ const env = import.meta.env as Record<string, string | undefined>
 // Borang bayaran BCL (boleh ditukar melalui env di Cloudflare)
 export const checkoutUrl = env.VITE_BCL_CHECKOUT_URL || 'https://mulashopee.bcl.my/form/shopee-ai-toolkit'
 export const coachingUrl = env.VITE_BCL_COACHING_URL || 'https://mulashopee.bcl.my/form/personal-coaching-shopee-marketing'
-export const serviceUrl = env.VITE_BCL_SERVICE_URL || 'https://mulashopee.bcl.my'
+export const serviceUrl = env.VITE_BCL_SERVICE_URL || 'https://mulashopee.bcl.my/form/service-tempah-temujanji'
 
 export type Profile = {
   id: string
