@@ -29,7 +29,19 @@ export type Lesson = {
   module: string
   title: string
   description: string | null
-  url: string
+  sort: number
+  product: string | null
+  unlocked: boolean
+  url: string | null
+}
+
+export type Product = {
+  slug: string
+  title: string
+  description: string | null
+  price_label: string | null
+  checkout_url: string | null
+  available: boolean
   sort: number
 }
 
@@ -40,6 +52,7 @@ export type SalesSummary = {
   month_total: number
   month_count: number
   last_month_total: number
-  members_total: number
-  members_month: number
+  users_total: number
+  users_month: number
+  buyers_total: number
 }

@@ -3,7 +3,7 @@ import { useAuth } from '../lib/auth'
 import { formatRM, greeting, longDate, percentChange } from '../lib/format'
 import { supabase, type SalesSummary } from '../lib/supabase'
 
-type RecentOrder = { order_no: string; name: string | null; email: string | null; amount: number; paid_at: string }
+type RecentOrder = { order_no: string; product: string; name: string | null; email: string | null; amount: number; paid_at: string }
 
 function Change({ value, label }: { value: number | null; label: string }) {
   if (value === null) return <span className="change neutral">— {label}</span>
@@ -25,7 +25,7 @@ export default function AdminDashboard() {
       supabase.rpc('sales_summary'),
       supabase
         .from('orders')
-        .select('order_no,name,email,amount,paid_at')
+        .select('order_no,product,name,email,amount,paid_at')
         .eq('status', 'paid')
         .order('paid_at', { ascending: false })
         .limit(10),
@@ -63,9 +63,9 @@ export default function AdminDashboard() {
           <Change value={summary ? percentChange(summary.month_total, summary.last_month_total) : null} label="vs bulan lepas" />
         </div>
         <div className="card stat">
-          <span className="stat-label">Jumlah ahli</span>
-          <strong className="stat-value">{summary?.members_total ?? 0}</strong>
-          <span className="stat-sub">+{summary?.members_month ?? 0} bulan ini</span>
+          <span className="stat-label">Pengguna berdaftar</span>
+          <strong className="stat-value">{summary?.users_total ?? 0}</strong>
+          <span className="stat-sub">+{summary?.users_month ?? 0} bulan ini · {summary?.buyers_total ?? 0} pembeli</span>
         </div>
       </div>
 
@@ -77,12 +77,13 @@ export default function AdminDashboard() {
           ) : (
             <table>
               <thead>
-                <tr><th>Pembeli</th><th>No. order</th><th>Masa</th><th className="num">Jumlah</th></tr>
+                <tr><th>Pembeli</th><th>Produk</th><th>No. order</th><th>Masa</th><th className="num">Jumlah</th></tr>
               </thead>
               <tbody>
                 {recent.map((o) => (
                   <tr key={o.order_no}>
                     <td>{o.name || o.email || '—'}</td>
+                    <td>{o.product}</td>
                     <td className="mono">{o.order_no}</td>
                     <td>{new Date(o.paid_at).toLocaleString('ms-MY', { dateStyle: 'short', timeStyle: 'short' })}</td>
                     <td className="num">{formatRM(o.amount)}</td>

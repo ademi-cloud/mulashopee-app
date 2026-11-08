@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Navigate, useLocation } from 'react-router-dom'
+import { Navigate, useLocation, useSearchParams } from 'react-router-dom'
 import Logo from '../components/Logo'
 import { useAuth } from '../lib/auth'
 import { supabase, supabaseConfigured } from '../lib/supabase'
@@ -9,7 +9,8 @@ export default function Login() {
   const location = useLocation()
   const from = (location.state as { from?: string } | null)?.from ?? '/ahli'
 
-  const [mode, setMode] = useState<'login' | 'signup'>('login')
+  const [params] = useSearchParams()
+  const [mode, setMode] = useState<'login' | 'signup'>(params.has('daftar') ? 'signup' : 'login')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -45,7 +46,7 @@ export default function Login() {
     <div className="auth-page">
       <div className="card auth-card">
         <Logo />
-        <h1>{mode === 'login' ? 'Log masuk ahli' : 'Daftar akaun'}</h1>
+        <h1>{mode === 'login' ? 'Log masuk ahli' : 'Daftar akaun percuma'}</h1>
         {!supabaseConfigured && (
           <p className="alert error">Supabase belum disambung. Isi VITE_SUPABASE_URL dan VITE_SUPABASE_ANON_KEY.</p>
         )}

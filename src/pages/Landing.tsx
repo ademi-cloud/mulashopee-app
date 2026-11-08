@@ -2,18 +2,16 @@ import { Link } from 'react-router-dom'
 import Logo from '../components/Logo'
 import { checkoutUrl, coachingUrl, serviceUrl } from '../lib/supabase'
 
-const modules = [
-  { n: '01', title: 'Buka Kedai', text: 'Daftar Shopee Seller, setting kedai, shipping dan bank dengan betul dari hari pertama.' },
-  { n: '02', title: 'Produk & SEO', text: 'Gambar, tajuk, variasi dan harga yang buat produk mudah dijumpai dan dibeli.' },
-  { n: '03', title: 'Trafik', text: 'Shopee Ads bajet kecil, Shopee Live dan Video untuk jualan berterusan.' },
-  { n: '04', title: 'Untung Sebenar', text: 'Kira komisen, fi transaksi dan kos supaya setiap jualan betul-betul untung.' },
+const freeItems = [
+  { icon: '📘', title: 'Ebook mula jual', text: 'Senarai semak buka kedai, setting wajib dan upload produk pertama.' },
+  { icon: '▶', title: 'Video langkah demi langkah', text: 'Dari daftar Shopee Seller hingga dapat jualan pertama.' },
+  { icon: '📣', title: 'Cara guna marketing tools', text: 'Voucher, Shopee Ads asas, Live dan Video — cara guna yang betul.' },
 ]
 
-const perks = [
-  'Video langkah demi langkah',
-  'Ebook & template siap guna',
-  'Kalkulator untung & fi Shopee',
-  'Akses seumur hidup + kemas kini',
+const upgrades = [
+  { title: 'Shopee AI Toolkit', text: 'Prompt, template dan tools AI untuk percepatkan kerja kedai.', price: 'RM17', was: 'RM97', note: 'Super Early Bird · tempat terhad', href: checkoutUrl },
+  { title: 'Rakaman Shopee Ads Advanced', text: 'Kuasai Shopee GMV Max: rakaman penuh + bonus.', price: 'RM59', href: 'https://mulashopee.bcl.my/form/rakaman-kuasai-shopee-gmv-max' },
+  { title: 'Rakaman Affiliate Marketing Advanced', text: 'Strategi Shopee Affiliate tahap lanjutan.', price: null, href: null },
 ]
 
 export default function Landing() {
@@ -25,48 +23,75 @@ export default function Landing() {
       </header>
 
       <section className="hero container">
-        <span className="pill">Kursus Shopee untuk pemula</span>
-        <h1>Mula jual di Shopee <span className="accent">dari kosong</span>, dengan langkah yang jelas.</h1>
+        <span className="pill">Percuma untuk penjual baru Shopee</span>
+        <h1>Mula jual di Shopee <span className="accent">percuma</span>, dengan langkah yang jelas.</h1>
         <p className="lead">
-          Mula Shopee ialah ruang belajar lengkap: video, ebook dan template untuk buka kedai,
-          dapat jualan pertama, dan kekal untung.
+          Ebook, video dan panduan marketing tools untuk buka kedai dan dapat jualan pertama.
+          Tiada caj. Daftar dan terus mula belajar.
         </p>
         <div className="row">
-          <a className="btn btn-primary btn-lg" href={checkoutUrl}>Sertai sekarang</a>
-          <a className="btn btn-outline btn-lg" href="#modul">Lihat modul</a>
+          <Link className="btn btn-primary btn-lg" to="/login?daftar=1">Daftar percuma</Link>
+          <a className="btn btn-outline btn-lg" href="#percuma">Apa yang percuma?</a>
         </div>
       </section>
 
-      <section id="modul" className="container section">
-        <h2>Apa yang awak akan belajar</h2>
-        <div className="grid-4">
-          {modules.map((m) => (
-            <div key={m.n} className="card">
-              <span className="muted mono">{m.n}</span>
-              <h3>{m.title}</h3>
-              <p className="muted">{m.text}</p>
+      <section id="percuma" className="container section">
+        <h2>Percuma — tiada apa-apa caj</h2>
+        <div className="grid-3">
+          {freeItems.map((f) => (
+            <div key={f.title} className="card">
+              <span className="list-icon">{f.icon}</span>
+              <h3 className="mt-sm">{f.title}</h3>
+              <p className="muted">{f.text}</p>
             </div>
           ))}
         </div>
+        <div className="row mt">
+          <Link className="btn btn-primary" to="/login?daftar=1">Daftar & akses sekarang</Link>
+        </div>
+      </section>
+
+      <section id="upgrade" className="container section">
+        <h2>Upgrade bila awak dah bersedia</h2>
+        <p className="muted section-lead">Bayar hanya untuk skill yang awak perlukan. Sekali bayar, akses seumur hidup.</p>
+        <div className="grid-3">
+          {upgrades.map((u) => (
+            <div key={u.title} className="card offer">
+              <h3>{u.title}</h3>
+              {u.note && <span className="pill">{u.note}</span>}
+              {u.price ? (
+                <strong className="price">{u.price} {u.was && <s className="price-sub">{u.was}</s>}</strong>
+              ) : (
+                <strong className="price price-text">Akan datang</strong>
+              )}
+              <p className="muted">{u.text}</p>
+              {u.href ? (
+                <a className="btn btn-primary" href={u.href}>Dapatkan</a>
+              ) : (
+                <span className="btn btn-outline" aria-disabled>Akan datang</span>
+              )}
+            </div>
+          ))}
+        </div>
+        <p className="muted mt-sm">Guna email yang sama semasa bayar dan daftar akaun — akses dibuka secara automatik.</p>
       </section>
 
       <section id="harga" className="container section">
-        <h2>Pilih cara awak nak mula</h2>
+        <h2>Perlukan bantuan lebih?</h2>
         <p className="muted section-lead">Tiga peringkat: belajar sendiri, kami bimbing, atau kami uruskan untuk awak.</p>
         <div className="grid-3">
-          <div className="card offer offer-main">
-            <span className="tier">Do it yourself</span>
-            <h3>Shopee AI Toolkit</h3>
-            <span className="pill">Super Early Bird · tempat terhad</span>
-            <strong className="price">RM17 <s className="price-sub">RM97</s></strong>
-            <small className="muted">Early Bird RM47 · Harga biasa RM97</small>
-            <ul className="checklist">
-              {perks.map((p) => <li key={p}>{p}</li>)}
-            </ul>
-            <a className="btn btn-primary" href={checkoutUrl}>Beli sekarang</a>
-            <small className="muted">Guna email yang sama semasa bayar dan daftar akaun.</small>
-          </div>
           <div className="card offer">
+            <span className="tier">Do it yourself</span>
+            <h3>Belajar sendiri</h3>
+            <strong className="price price-text">Percuma + upgrade</strong>
+            <ul className="checklist">
+              <li>Ebook & video mula jual — percuma</li>
+              <li>Cara guna marketing tools — percuma</li>
+              <li>Rakaman advanced & AI Toolkit — berbayar</li>
+            </ul>
+            <Link className="btn btn-outline" to="/login?daftar=1">Daftar percuma</Link>
+          </div>
+          <div className="card offer offer-main">
             <span className="tier">Done with you</span>
             <h3>Personal Coaching</h3>
             <strong className="price">RM2,000 <span className="price-sub">/ RM5,000</span></strong>
@@ -74,9 +99,9 @@ export default function Landing() {
               <li>Personal Coaching — RM2,000</li>
               <li>Group Coaching — RM5,000</li>
               <li>Semakan kedai & pelan tindakan</li>
-              <li>Termasuk akses Shopee AI Toolkit</li>
+              <li>Termasuk semua kandungan berbayar</li>
             </ul>
-            <a className="btn btn-outline" href={coachingUrl}>Bayar & daftar coaching</a>
+            <a className="btn btn-primary" href={coachingUrl}>Bayar & daftar coaching</a>
           </div>
           <div className="card offer">
             <span className="tier">Done for you</span>

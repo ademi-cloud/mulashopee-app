@@ -1,8 +1,10 @@
 // Cloudflare Pages Function: terima notifikasi bayaran dari BCL dan simpan
 // ke jadual `orders` dalam Supabase.
 //
-// URL webhook (letak dalam setting borang BCL):
-//   https://<domain>/api/bcl-webhook?secret=<BCL_WEBHOOK_SECRET>
+// URL webhook (letak dalam setting borang BCL), satu produk bagi setiap borang:
+//   https://<domain>/api/bcl-webhook?secret=<BCL_WEBHOOK_SECRET>&product=<slug>
+// slug: toolkit | ads-advanced | affiliate-advanced | coaching
+// Tanpa &product= dianggap 'toolkit'.
 //
 // NOTA: format payload BCL belum disahkan dengan dokumentasi rasmi
 // (docs.bcl.my/webhook-payment-form). Fungsi ini membaca beberapa nama
@@ -16,6 +18,8 @@ interface Env {
 }
 
 type Payload = Record<string, unknown>
+
+const PRODUCTS = ['toolkit', 'ads-advanced', 'affiliate-advanced', 'coaching']
 
 /** Cari nilai pertama bagi mana-mana kunci, di mana-mana tahap dalam payload. */
 function find(obj: unknown, keys: string[], depth = 0): unknown {
@@ -67,7 +71,10 @@ async function readBody(request: Request): Promise<Payload> {
 }
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
-  const secret = new URL(request.url).searchParams.get('secret') ?? ''
+  const params = new URL(request.url).searchParams
+  const secret = params.get('secret') ?? ''
+  const product = params.get('product') || 'toolkit'
+  if (!PRODUCTS.includes(product)) return new Response('unknown product', { status: 400 })
   if (!env.BCL_WEBHOOK_SECRET || !timingSafeEqual(secret, env.BCL_WEBHOOK_SECRET)) {
     return new Response('unauthorised', { status: 401 })
   }
@@ -92,6 +99,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
 
   const row = {
     order_no: orderNo,
+    product,
     email: str(find(body, ['payer_email', 'email', 'customer_email']))?.toLowerCase() ?? null,
     name: str(find(body, ['payer_name', 'name', 'customer_name'])),
     phone: str(find(body, ['payer_telephone_number', 'phone', 'telephone', 'customer_phone'])),
@@ -101,15 +109,23 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     raw: body,
   }
 
-  const res = await fetch(`${env.SUPABASE_URL}/rest/v1/orders?on_conflict=order_no`, {
-    method: 'POST',
-    headers: {
-      ...supabaseHeaders(env),
-      'Content-Type': 'application/json',
-      Prefer: 'resolution=merge-duplicates,return=minimal',
-    },
-    body: JSON.stringify(row),
-  })
+  const insert = (body: Record<string, unknown>) =>
+    fetch(`${env.SUPABASE_URL}/rest/v1/orders?on_conflict=order_no`, {
+      method: 'POST',
+      headers: {
+        ...supabaseHeaders(env),
+        'Content-Type': 'application/json',
+        Prefer: 'resolution=merge-duplicates,return=minimal',
+      },
+      body: JSON.stringify(body),
+    })
+
+  let res = await insert(row)
+  // Jika migrasi 0002 (lajur product) belum dijalankan, simpan tanpa product.
+  if (res.status === 400 && (await res.clone().text()).includes('product')) {
+    const { product: _omit, ...withoutProduct } = row
+    res = await insert(withoutProduct)
+  }
 
   if (!res.ok) {
     console.error('Supabase insert failed', res.status, await res.text())
