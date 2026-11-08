@@ -3,9 +3,9 @@ import Logo from '../components/Logo'
 import { checkoutUrl, coachingUrl, serviceUrl } from '../lib/supabase'
 
 const freeItems = [
-  { icon: '📘', title: 'Ebook mula jual', text: 'Senarai semak buka kedai, setting wajib dan upload produk pertama.' },
-  { icon: '▶', title: 'Video langkah demi langkah', text: 'Dari daftar Shopee Seller hingga dapat jualan pertama.' },
-  { icon: '📣', title: 'Cara guna marketing tools', text: 'Voucher, Shopee Ads asas, Live dan Video — cara guna yang betul.' },
+  { icon: '📘', title: 'Ebook mula jual', text: 'Senarai semak buka kedai Shopee untuk jenama anda: setting wajib, struktur produk dan jualan pertama.' },
+  { icon: '▶', title: 'Video langkah demi langkah', text: 'Dari daftar Shopee Seller hingga jualan pertama, tanpa membazir masa dan bajet.' },
+  { icon: '📣', title: 'Cara guna marketing tools', text: 'Voucher, Shopee Ads, Live dan Video: bila guna, dan cara guna yang betul untuk bisnes anda.' },
 ]
 
 const upgrades = [
@@ -23,11 +23,11 @@ export default function Landing() {
       </header>
 
       <section className="hero container">
-        <span className="pill">Percuma untuk penjual baru Shopee</span>
-        <h1>Mula jual di Shopee <span className="accent">percuma</span>, dengan langkah yang jelas.</h1>
+        <span className="pill">Untuk founder & pemilik bisnes</span>
+        <h1>Bawa bisnes anda ke Shopee, <span className="accent">mula percuma</span> dengan langkah yang jelas.</h1>
         <p className="lead">
-          Ebook, video dan panduan marketing tools untuk buka kedai dan dapat jualan pertama.
-          Tiada caj. Daftar dan terus mula belajar.
+          Panduan praktikal untuk founder dan pemilik bisnes: buka kedai, dapat jualan pertama
+          dan guna marketing tools Shopee dengan betul. Tiada caj. Daftar dan terus mula.
         </p>
         <div className="row">
           <Link className="btn btn-primary btn-lg" to="/login?daftar=1">Daftar percuma</Link>
@@ -52,8 +52,8 @@ export default function Landing() {
       </section>
 
       <section id="upgrade" className="container section">
-        <h2>Upgrade bila awak dah bersedia</h2>
-        <p className="muted section-lead">Bayar hanya untuk skill yang awak perlukan. Sekali bayar, akses seumur hidup.</p>
+        <h2>Upgrade bila bisnes anda dah bersedia</h2>
+        <p className="muted section-lead">Bayar hanya untuk skill yang anda perlukan. Sekali bayar, akses seumur hidup.</p>
         <div className="grid-3">
           {upgrades.map((u) => (
             <div key={u.title} className="card offer">
@@ -77,8 +77,8 @@ export default function Landing() {
       </section>
 
       <section id="harga" className="container section">
-        <h2>Perlukan bantuan lebih?</h2>
-        <p className="muted section-lead">Tiga peringkat: belajar sendiri, kami bimbing, atau kami uruskan untuk awak.</p>
+        <h2>Mahu hasil lebih cepat?</h2>
+        <p className="muted section-lead">Tiga peringkat: belajar sendiri, kami bimbing pasukan anda, atau kami uruskan sepenuhnya.</p>
         <div className="grid-3">
           <div className="card offer">
             <span className="tier">Do it yourself</span>
@@ -98,7 +98,7 @@ export default function Landing() {
             <ul className="checklist">
               <li>Personal Coaching — RM2,000</li>
               <li>Group Coaching — RM5,000</li>
-              <li>Semakan kedai & pelan tindakan</li>
+              <li>Audit kedai & pelan pertumbuhan</li>
               <li>Termasuk semua kandungan berbayar</li>
             </ul>
             <a className="btn btn-primary" href={coachingUrl}>Bayar & daftar coaching</a>
@@ -108,7 +108,7 @@ export default function Landing() {
             <h3>Service Marketing Shopee</h3>
             <strong className="price">2%–5% <span className="price-sub">daripada jualan</span></strong>
             <ul className="checklist">
-              <li>Kami urus marketing & iklan kedai Shopee awak</li>
+              <li>Kami urus marketing & iklan kedai Shopee anda</li>
               <li>Isi borang percuma dengan maklumat kedai</li>
               <li>Kami hubungi untuk bincang & cadangkan kadar</li>
             </ul>
