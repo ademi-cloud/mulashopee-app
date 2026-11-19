@@ -1,0 +1,4 @@
+# Server sahaja (Cloudflare Pages Functions). JANGAN commit.
+SUPABASE_URL=https://xxxx.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=
+BCL_WEBHOOK_SECRET=
