@@ -181,3 +181,13 @@ input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
 .guide-bookmark { word-break: break-all; }
 .guide-nav { display: flex; justify-content: space-between; gap: 12px; margin-top: 36px; flex-wrap: wrap; }
 .guide-nav .btn { max-width: 100%; white-space: normal; text-align: left; }
+
+/* Terbitkan panduan */
+.publish-list { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 8px; }
+.publish-list li { display: flex; gap: 10px; align-items: flex-start; }
+.publish-icon { width: 22px; flex: none; text-align: center; font-weight: 700; }
+.publish-ok .publish-icon { color: #166534; }
+.publish-amaran .publish-icon { color: #b45309; }
+.publish-ralat .publish-icon { color: #991b1b; }
+.publish-sama .publish-icon, .publish-menunggu .publish-icon { color: var(--muted); }
+.publish .alert { margin-top: 12px; }
