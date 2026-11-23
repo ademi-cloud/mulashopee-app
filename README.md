@@ -72,3 +72,28 @@ cp .env.example .env.local   # isi nilai Supabase
 npm install
 npm run dev
 ```
+
+## Panduan dari Notion
+
+Panduan (ebook dalam app) ditulis dalam database Notion **Panduan Mula Shopee**
+(di bawah halaman *MulaShopee App*), kemudian diterbitkan dengan butang
+**Terbitkan dari Notion** di dashboard admin.
+
+| Ruangan Notion | Nilai |
+|---|---|
+| Tajuk, Ringkasan | Teks |
+| Modul | Kumpulan dalam app |
+| Produk | Percuma · Shopee AI Toolkit · Shopee Ads Advanced · Affiliate Advanced |
+| Susunan | Nombor |
+| Status | Draf · Terbit (hanya Terbit diterbitkan) |
+
+Setup sekali:
+1. Notion → Settings → Connections → *Develop or manage integrations* → cipta integration
+   "Mula Shopee App" (Read content sahaja). Salin token **terus** ke Cloudflare.
+2. Database Panduan → ⋯ → Connections → tambah "Mula Shopee App".
+3. Cloudflare → Settings → Variables and Secrets (Production **dan** Preview):
+   - `NOTION_TOKEN` — **Secret**
+   - `NOTION_PANDUAN_DB_ID` = `4215240e458581bcaeccfdbd479261fa` — Plaintext
+4. Supabase → SQL Editor → jalankan `supabase/migrations/0003_panduan.sql`.
+
+Ujian: `npm test` (Vitest), `npm run build`, `npx tsc -p functions`.
