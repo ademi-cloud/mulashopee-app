@@ -1,3 +1,4 @@
+import { serviceHeaders } from '../../lib/panduan/supabase'
 // Cloudflare Pages Function: terima notifikasi bayaran dari BCL dan simpan
 // ke jadual `orders` dalam Supabase.
 //
@@ -56,13 +57,6 @@ function timingSafeEqual(a: string, b: string): boolean {
   return diff === 0
 }
 
-// Key baru Supabase (sb_secret_...) hanya boleh dihantar dalam header `apikey`.
-// Key lama (JWT eyJ...) perlu dalam `apikey` dan `Authorization`.
-function supabaseHeaders(env: Env): Record<string, string> {
-  const key = env.SUPABASE_SERVICE_ROLE_KEY.trim()
-  return key.startsWith('sb_') ? { apikey: key } : { apikey: key, Authorization: `Bearer ${key}` }
-}
-
 async function readBody(request: Request): Promise<Payload> {
   const type = request.headers.get('content-type') ?? ''
   if (type.includes('application/json')) return (await request.json()) as Payload
@@ -113,7 +107,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     fetch(`${env.SUPABASE_URL}/rest/v1/orders?on_conflict=order_no`, {
       method: 'POST',
       headers: {
-        ...supabaseHeaders(env),
+        ...serviceHeaders(env),
         'Content-Type': 'application/json',
         Prefer: 'resolution=merge-duplicates,return=minimal',
       },
@@ -158,7 +152,7 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
     jenis_key: !key ? 'TIADA' : key.startsWith('sb_secret_') ? 'secret (betul)' : key.startsWith('sb_publishable_') ? 'publishable (SALAH — perlu secret)' : key.startsWith('eyJ') ? (jwtRole(key) === 'service_role' ? 'JWT service_role (betul)' : `JWT ${jwtRole(key)} (SALAH — perlu service_role)`) : 'tidak dikenali',
   }
   if (env.SUPABASE_URL && key) {
-    const res = await fetch(`${env.SUPABASE_URL}/rest/v1/orders?select=order_no&limit=1`, { headers: supabaseHeaders(env) })
+    const res = await fetch(`${env.SUPABASE_URL}/rest/v1/orders?select=order_no&limit=1`, { headers: serviceHeaders(env) })
     result.sambungan_supabase = res.ok ? 'berjaya' : `gagal (${res.status}): ${(await res.text()).slice(0, 300)}`
   }
   result.ok = result.sambungan_supabase === 'berjaya' && String(result.jenis_key).includes('betul')
