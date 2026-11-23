@@ -25,7 +25,7 @@ export type Profile = {
 
 export type Lesson = {
   id: number
-  kind: 'video' | 'ebook'
+  kind: 'video' | 'ebook' | 'panduan'
   module: string
   title: string
   description: string | null

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import type { Lesson, Product } from '../lib/supabase'
 
 export default function LessonList({ lessons, products }: { lessons: Lesson[]; products: Record<string, Product> }) {
@@ -35,7 +36,15 @@ export default function LessonList({ lessons, products }: { lessons: Lesson[]; p
             )}
             <div className="list">
               {items.map((l) =>
-                l.unlocked && l.url ? (
+                l.unlocked && l.kind === 'panduan' ? (
+                  <Link key={l.id} to={`/ahli/panduan/${l.id}`} className="card list-item">
+                    <span className="list-icon">📖</span>
+                    <span>
+                      <b>{l.title}</b>
+                      {l.description && <span className="muted block">{l.description}</span>}
+                    </span>
+                  </Link>
+                ) : l.unlocked && l.url ? (
                   <a key={l.id} href={l.url} target="_blank" rel="noreferrer" className="card list-item">
                     <span className="list-icon">{l.kind === 'video' ? '▶' : '⬇'}</span>
                     <span>
