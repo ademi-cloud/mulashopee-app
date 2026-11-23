@@ -35,11 +35,19 @@ export default function PublishGuides() {
       let failed = 0
       for (const p of terbit.filter((x) => x.perluKemasKini)) {
         update(p.pageId, { state: 'berjalan' })
-        const r = await call<{ ok?: boolean; amaran?: string[]; ralat?: string }>(`/api/panduan/terbit?page=${encodeURIComponent(p.pageId)}`, 'POST')
-        if (r.ok && r.data.ok) {
+        // Panduan dengan banyak gambar baru diterbitkan dalam beberapa pusingan.
+        let r = await call<{ ok?: boolean; amaran?: string[]; ralat?: string; selesai?: boolean }>(`/api/panduan/terbit?page=${encodeURIComponent(p.pageId)}`, 'POST')
+        for (let round = 1; r.ok && r.data.ok && r.data.selesai === false && round < 30; round++) {
+          update(p.pageId, { state: 'berjalan', note: `Menyalin gambar… (pusingan ${round + 1})` })
+          r = await call(`/api/panduan/terbit?page=${encodeURIComponent(p.pageId)}`, 'POST')
+        }
+        if (r.ok && r.data.ok && r.data.selesai === false) {
+          failed++
+          update(p.pageId, { state: 'ralat', note: 'Terlalu banyak gambar — cuba Terbitkan sekali lagi' })
+        } else if (r.ok && r.data.ok) {
           done++
           const warn = r.data.amaran ?? []
-          update(p.pageId, warn.length ? { state: 'amaran', note: warn.join(' · ') } : { state: 'ok' })
+          update(p.pageId, warn.length ? { state: 'amaran', note: warn.join(' · ') } : { state: 'ok', note: undefined })
         } else {
           failed++
           update(p.pageId, { state: 'ralat', note: r.data.ralat ?? 'Ralat tidak diketahui' })

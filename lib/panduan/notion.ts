@@ -62,20 +62,22 @@ export async function getPage(token: string, pageId: string): Promise<NotionPage
   return toPage(await notion(token, `/pages/${pageId}`))
 }
 
-const NO_DESCEND = new Set(['child_page', 'child_database'])
+// Anak block ini tidak dipaparkan (lihat convert.ts), jadi jangan bazirkan request.
+const NO_DESCEND = new Set(['child_page', 'child_database', 'column_list', 'column', 'synced_block'])
 
 /** Semua block dalam halaman/block, termasuk anak (rekursif, ikut pagination). */
-export async function fetchBlocks(token: string, blockId: string): Promise<NotionBlock[]> {
+export async function fetchBlocks(token: string, blockId: string, stats: { requests: number } = { requests: 0 }): Promise<NotionBlock[]> {
   const blocks: NotionBlock[] = []
   let cursor: string | undefined
   do {
     const q = `page_size=100${cursor ? `&start_cursor=${encodeURIComponent(cursor)}` : ''}`
+    stats.requests++
     const res = await notion<{ results: NotionBlock[]; has_more: boolean; next_cursor: string | null }>(token, `/blocks/${blockId}/children?${q}`)
     blocks.push(...res.results)
     cursor = res.has_more ? (res.next_cursor ?? undefined) : undefined
   } while (cursor)
   for (const b of blocks) {
-    if (b.has_children && !NO_DESCEND.has(b.type)) b.children = await fetchBlocks(token, b.id)
+    if (b.has_children && !NO_DESCEND.has(b.type)) b.children = await fetchBlocks(token, b.id, stats)
   }
   return blocks
 }

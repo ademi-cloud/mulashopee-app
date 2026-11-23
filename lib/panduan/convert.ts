@@ -57,15 +57,16 @@ export function convertBlocks(blocks: NotionBlock[]): { blocks: GuideBlock[]; wa
     const d = data(b)
     switch (b.type) {
       case 'paragraph':
-        out.push({ t: 'p', spans: spansOf(b) })
+        out.push({ t: 'p', spans: spansOf(b) }, ...inner(b))
         break
       case 'heading_1':
       case 'heading_2':
       case 'heading_3':
-        out.push({ t: `h${b.type.slice(-1)}` as 'h1' | 'h2' | 'h3', spans: spansOf(b) })
+        if (d.is_toggleable) out.push({ t: 'toggle', spans: spansOf(b), children: inner(b) })
+        else out.push({ t: `h${b.type.slice(-1)}` as 'h1' | 'h2' | 'h3', spans: spansOf(b) })
         break
       case 'quote':
-        out.push({ t: 'quote', spans: spansOf(b) })
+        out.push({ t: 'quote', spans: spansOf(b) }, ...inner(b))
         break
       case 'bulleted_list_item':
       case 'numbered_list_item': {
@@ -77,7 +78,7 @@ export function convertBlocks(blocks: NotionBlock[]): { blocks: GuideBlock[]; wa
         break
       }
       case 'to_do':
-        out.push({ t: 'todo', checked: !!d.checked, spans: spansOf(b) })
+        out.push({ t: 'todo', checked: !!d.checked, spans: spansOf(b) }, ...inner(b))
         break
       case 'callout': {
         const icon = d.icon as { type?: string; emoji?: string } | null | undefined

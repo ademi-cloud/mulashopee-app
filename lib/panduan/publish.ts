@@ -16,31 +16,40 @@ export type LessonRow = {
   url: null
 }
 
+export type CopyResult = { src: string } | { gagal: true } | { nanti: true }
+
 export type PublishDeps = {
-  /** Salin gambar Notion ke Storage; pulang URL kekal, atau null jika gagal. */
-  uploadImage(url: string): Promise<string | null>
+  /** Salin gambar Notion ke Storage: URL kekal, gagal, atau "nanti" bila had request habis. */
+  copyImage(url: string): Promise<CopyResult>
   upsertLesson(row: LessonRow): Promise<void>
 }
 
-export type PublishResult = { ok: true; amaran: string[] } | { ok: false; ralat: string }
+/** selesai=false: masih ada gambar untuk disalin — panggil terbit sekali lagi. */
+export type PublishResult = { ok: true; amaran: string[]; selesai: boolean } | { ok: false; ralat: string }
 
 /** Ganti src gambar Notion dengan URL Storage (rekursif); buang gambar yang gagal. */
-async function copyImages(blocks: GuideBlock[], deps: PublishDeps, amaran: string[]): Promise<GuideBlock[]> {
+type CopyState = { amaran: string[]; tertunda: boolean }
+
+async function copyImages(blocks: GuideBlock[], deps: PublishDeps, st: CopyState): Promise<GuideBlock[]> {
   const out: GuideBlock[] = []
   for (const b of blocks) {
     if (b.t === 'image' && b.notionFile) {
-      const src = await deps.uploadImage(b.src)
-      if (!src) {
-        amaran.push('Gambar gagal disalin dan dibuang dari panduan')
+      const r = await deps.copyImage(b.src)
+      if ('nanti' in r) {
+        st.tertunda = true
         continue
       }
-      out.push({ ...b, src, notionFile: false })
+      if ('gagal' in r) {
+        st.amaran.push('Gambar gagal disalin dan dibuang dari panduan')
+        continue
+      }
+      out.push({ ...b, src: r.src, notionFile: false })
     } else if (b.t === 'ul' || b.t === 'ol') {
       const items = []
-      for (const it of b.items) items.push({ ...it, children: await copyImages(it.children, deps, amaran) })
+      for (const it of b.items) items.push({ ...it, children: await copyImages(it.children, deps, st) })
       out.push({ ...b, items })
     } else if (b.t === 'callout' || b.t === 'toggle') {
-      out.push({ ...b, children: await copyImages(b.children, deps, amaran) })
+      out.push({ ...b, children: await copyImages(b.children, deps, st) })
     } else {
       out.push(b)
     }
@@ -55,8 +64,9 @@ export async function publishPage(page: NotionPage, blocks: NotionBlock[], deps:
   if (!product.ok) return { ok: false, ralat: `Produk "${page.productName ?? 'kosong'}" tidak dikenali` }
 
   const { blocks: converted, warnings } = convertBlocks(blocks)
-  const amaran = [...warnings]
-  const body = await copyImages(converted, deps, amaran)
+  const st: CopyState = { amaran: [...warnings], tertunda: false }
+  const body = await copyImages(converted, deps, st)
+  if (st.tertunda) return { ok: true, amaran: st.amaran, selesai: false }
 
   await deps.upsertLesson({
     notion_page_id: page.id,
@@ -71,10 +81,15 @@ export async function publishPage(page: NotionPage, blocks: NotionBlock[], deps:
     published: true,
     url: null,
   })
-  return { ok: true, amaran }
+  return { ok: true, amaran: st.amaran, selesai: true }
 }
 
-/** Panduan yang masih diterbitkan dalam app tetapi bukan lagi "Terbit" di Notion. */
+/** Boleh diterbitkan: status Terbit, ada tajuk, dan Produk dikenali. */
+export function isPublishable(page: NotionPage): boolean {
+  return page.status === 'Terbit' && !!page.title.trim() && productSlug(page.productName).ok
+}
+
+/** Panduan yang masih diterbitkan dalam app tetapi tidak lagi layak diterbitkan di Notion. */
 export function pagesToUnpublish(publishedInApp: string[], terbitInNotion: string[]): string[] {
   const keep = new Set(terbitInNotion)
   return publishedInApp.filter((id) => !keep.has(id))

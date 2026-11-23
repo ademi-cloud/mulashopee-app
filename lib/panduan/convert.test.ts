@@ -117,6 +117,29 @@ describe('convertBlocks', () => {
   })
 })
 
+describe('nested content', () => {
+  it('keeps children of paragraphs, quotes and to_dos after the block', () => {
+    const { blocks, warnings } = convertBlocks([
+      block('paragraph', { rich_text: [rt('Induk')] }, [block('paragraph', { rich_text: [rt('Anak')] })]),
+      block('to_do', { rich_text: [rt('Buat')], checked: false }, [block('paragraph', { rich_text: [rt('Nota')] })]),
+    ])
+    expect(warnings).toEqual([])
+    expect(blocks).toEqual([
+      { t: 'p', spans: [{ text: 'Induk' }] },
+      { t: 'p', spans: [{ text: 'Anak' }] },
+      { t: 'todo', checked: false, spans: [{ text: 'Buat' }] },
+      { t: 'p', spans: [{ text: 'Nota' }] },
+    ])
+  })
+
+  it('toggleable heading becomes a toggle keeping its content', () => {
+    const { blocks } = convertBlocks([
+      block('heading_2', { rich_text: [rt('Soalan')], is_toggleable: true }, [block('paragraph', { rich_text: [rt('Jawapan')] })]),
+    ])
+    expect(blocks).toEqual([{ t: 'toggle', spans: [{ text: 'Soalan' }], children: [{ t: 'p', spans: [{ text: 'Jawapan' }] }] }])
+  })
+})
+
 describe('youtubeId', () => {
   it('reads watch, short and embed urls', () => {
     expect(youtubeId('https://www.youtube.com/watch?v=abc123')).toBe('abc123')

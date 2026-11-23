@@ -1,25 +1,54 @@
-import type { LessonRow } from './publish'
+import type { CopyResult, LessonRow } from './publish'
 import { serviceHeaders, type ServiceEnv } from './supabase'
 
 const EXT: Record<string, string> = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/gif': 'gif', 'image/webp': 'webp', 'image/svg+xml': 'svg' }
 
-/** Muat turun gambar Notion dan simpan dalam bucket `panduan` dengan nama rawak. */
-export async function uploadImage(env: ServiceEnv, url: string): Promise<string | null> {
-  try {
-    const src = await fetch(url)
-    if (!src.ok) return null
-    const type = (src.headers.get('Content-Type') ?? '').split(';')[0].trim()
-    const ext = EXT[type]
-    if (!ext) return null
-    const name = `${crypto.randomUUID()}.${ext}`
-    const res = await fetch(`${env.SUPABASE_URL}/storage/v1/object/panduan/${name}`, {
-      method: 'POST',
-      headers: { ...serviceHeaders(env), 'Content-Type': type },
-      body: await src.arrayBuffer(),
-    })
-    return res.ok ? `${env.SUPABASE_URL}/storage/v1/object/public/panduan/${name}` : null
-  } catch {
-    return null
+const publicUrl = (env: ServiceEnv, path: string) => `${env.SUPABASE_URL}/storage/v1/object/public/panduan/${path}`
+
+/** Nama tetap bagi fail Notion: sama untuk semua URL bertandatangan fail yang sama. */
+export async function imageKey(url: string): Promise<string> {
+  const u = new URL(url)
+  const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(u.origin + u.pathname))
+  return [...new Uint8Array(hash)].slice(0, 16).map((b) => b.toString(16).padStart(2, '0')).join('')
+}
+
+/** Gambar yang sudah ada dalam bucket `panduan` (folder img/). Kos: 1 request. */
+export async function listExistingImages(env: ServiceEnv): Promise<Set<string>> {
+  const res = await fetch(`${env.SUPABASE_URL}/storage/v1/object/list/panduan`, {
+    method: 'POST',
+    headers: { ...serviceHeaders(env), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prefix: 'img', limit: 10000 }),
+  })
+  if (!res.ok) throw new Error(`Gagal baca senarai gambar (${res.status})`)
+  return new Set(((await res.json()) as { name: string }[]).map((o) => `img/${o.name}`))
+}
+
+/**
+ * Penyalin gambar dengan had request (pelan percuma Cloudflare: 50 setiap request).
+ * Gambar sedia ada digunakan semula tanpa request; gambar baru kos 2 request.
+ */
+export function makeImageCopier(env: ServiceEnv, existing: Set<string>, budget: { left: number }) {
+  return async (url: string): Promise<CopyResult> => {
+    const path = `img/${await imageKey(url)}`
+    if (existing.has(path)) return { src: publicUrl(env, path) }
+    if (budget.left < 2) return { nanti: true }
+    budget.left -= 2
+    try {
+      const src = await fetch(url)
+      if (!src.ok) return { gagal: true }
+      const type = (src.headers.get('Content-Type') ?? '').split(';')[0].trim()
+      if (!EXT[type]) return { gagal: true }
+      const res = await fetch(`${env.SUPABASE_URL}/storage/v1/object/panduan/${path}`, {
+        method: 'POST',
+        headers: { ...serviceHeaders(env), 'Content-Type': type, 'x-upsert': 'true' },
+        body: await src.arrayBuffer(),
+      })
+      if (!res.ok) return { gagal: true }
+      existing.add(path)
+      return { src: publicUrl(env, path) }
+    } catch {
+      return { gagal: true }
+    }
   }
 }
 
