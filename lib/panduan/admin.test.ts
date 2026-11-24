@@ -23,18 +23,50 @@ describe('requireAdmin', () => {
     if (!r.ok) expect(r.response.status).toBe(403)
   })
 
-  it('rejects invalid token', async () => {
+  it('rejects invalid token with a session message', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => json({ msg: 'bad jwt' }, 401)))
     const r = await requireAdmin(req('t'), env)
     expect(r.ok).toBe(false)
-    if (!r.ok) expect(r.response.status).toBe(403)
+    if (!r.ok) {
+      expect(r.response.status).toBe(403)
+      expect(((await r.response.json()) as { ralat: string }).ralat).toContain('Sesi log masuk')
+    }
+  })
+
+  it('flags a publishable key used as the service key', async () => {
+    const r = await requireAdmin(req('t'), { ...env, SUPABASE_SERVICE_ROLE_KEY: 'sb_publishable_abc' })
+    expect(r.ok).toBe(false)
+    if (!r.ok) {
+      expect(r.response.status).toBe(500)
+      expect(((await r.response.json()) as { ralat: string }).ralat).toContain('publishable')
+    }
+  })
+
+  it('reports the status when the profile lookup fails', async () => {
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => (url.includes('/auth/v1/user') ? json({ id: 'u1' }) : json({ message: 'Invalid API key' }, 401))))
+    const r = await requireAdmin(req('t'), env)
+    expect(r.ok).toBe(false)
+    if (!r.ok) {
+      expect(r.response.status).toBe(500)
+      expect(((await r.response.json()) as { ralat: string }).ralat).toContain('401')
+    }
   })
 
   it('rejects non-admin', async () => {
     vi.stubGlobal('fetch', vi.fn(async (url: string) => (url.includes('/auth/v1/user') ? json({ id: 'u1' }) : json([{ is_admin: false }]))))
     const r = await requireAdmin(req('t'), env)
     expect(r.ok).toBe(false)
-    if (!r.ok) expect(r.response.status).toBe(403)
+    if (!r.ok) {
+      expect(r.response.status).toBe(403)
+      expect(((await r.response.json()) as { ralat: string }).ralat).toContain('bukan admin')
+    }
+  })
+
+  it('explains when the profile cannot be found with the service key', async () => {
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => (url.includes('/auth/v1/user') ? json({ id: 'u1' }) : json([]))))
+    const r = await requireAdmin(req('t'), env)
+    expect(r.ok).toBe(false)
+    if (!r.ok) expect(((await r.response.json()) as { ralat: string }).ralat).toContain('Profil tidak dijumpai')
   })
 
   it('accepts admin', async () => {
