@@ -19,7 +19,11 @@ export async function requireAdmin(
   const userRes = await fetch(`${env.SUPABASE_URL}/auth/v1/user`, {
     headers: { apikey: serviceHeaders(env).apikey, Authorization: `Bearer ${token}` },
   })
-  if (!userRes.ok) return fail(403, `Sesi log masuk tidak diterima oleh Supabase (${userRes.status}) — log keluar dan log masuk semula`)
+  if (!userRes.ok) {
+    const b = (await userRes.json().catch(() => ({}))) as { msg?: string; message?: string; error_description?: string }
+    const detail = b.msg ?? b.message ?? b.error_description ?? ''
+    return fail(403, `Sesi log masuk tidak diterima oleh Supabase (${userRes.status}${detail ? `: ${detail}` : ''}) — log keluar dan log masuk semula`)
+  }
   const user = (await userRes.json()) as { id?: string }
   if (!user.id) return fail(403, 'Sesi log masuk tidak sah — log keluar dan log masuk semula')
 

@@ -29,7 +29,9 @@ describe('requireAdmin', () => {
     expect(r.ok).toBe(false)
     if (!r.ok) {
       expect(r.response.status).toBe(403)
-      expect(((await r.response.json()) as { ralat: string }).ralat).toContain('Sesi log masuk')
+      const ralat = ((await r.response.json()) as { ralat: string }).ralat
+      expect(ralat).toContain('Sesi log masuk')
+      expect(ralat).toContain('bad jwt')
     }
   })
 
