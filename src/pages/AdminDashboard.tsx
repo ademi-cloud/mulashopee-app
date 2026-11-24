@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import PublishGuides from '../components/PublishGuides'
 import { useAuth } from '../lib/auth'
 import { formatRM, greeting, longDate, percentChange } from '../lib/format'
 import { supabase, type SalesSummary } from '../lib/supabase'
@@ -68,6 +69,8 @@ export default function AdminDashboard() {
           <span className="stat-sub">+{summary?.users_month ?? 0} bulan ini · {summary?.buyers_total ?? 0} pembeli</span>
         </div>
       </div>
+
+      <PublishGuides />
 
       <section className="mt">
         <h2 className="section-label">Jualan terkini</h2>

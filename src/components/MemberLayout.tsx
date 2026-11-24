@@ -10,7 +10,7 @@ export default function MemberLayout() {
     ...(profile?.is_admin ? [{ to: '/admin', label: 'Dashboard' }] : []),
     { to: '/ahli', label: 'Utama', end: true },
     { to: '/ahli/video', label: 'Video' },
-    { to: '/ahli/ebook', label: 'Ebook' },
+    { to: '/ahli/panduan', label: 'Panduan' },
   ]
 
   return (

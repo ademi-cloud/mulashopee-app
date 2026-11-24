@@ -52,5 +52,7 @@ Pembetulan kecil yang jelas (typo, warna, teks) boleh terus dibuat, tetapi berit
 - Webhook BCL: `/api/bcl-webhook?secret=<BCL_WEBHOOK_SECRET>&product=<toolkit|ads-advanced|affiliate-advanced|coaching>`.
   Tool API BCL **tidak** menyimpan URL webhook — pemilik tambah secara manual di BCL → Webhook Settings.
 - Produk & akses: `lessons.product` kosong = percuma; berbayar dibuka oleh jualan `paid` dengan email sama; `coaching` buka semua.
+- Panduan: ditulis di Notion (database "Panduan Mula Shopee", ID `4215240e458581bcaeccfdbd479261fa`), diterbitkan ke `lessons` (kind `panduan`, lajur `body`) melalui `functions/api/panduan/*` (admin sahaja). Isi berbayar hanya melalui RPC `guide_body`. Rahsia: `NOTION_TOKEN`.
+- Ujian: `npm test` (Vitest) wajib lulus bersama `npm run build` dan `npx tsc -p functions`.
 - Jenama: Brandbook 2022 — oren `#E75224`, biru royal `#2C3688`, kelabu `#2B2B2B`, font Montserrat.
 - Rekod keputusan & senarai semak: Notion → Work Command Centre → Projects → **MulaShopee App**.

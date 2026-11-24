@@ -147,3 +147,47 @@ input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
 .list-item.locked { opacity: .6; }
 .badge-inline { align-self: flex-start; }
 .offer p.muted { flex: 1; }
+
+/* Panduan */
+.guide-page { max-width: 720px; }
+.guide-back { display: inline-block; margin-bottom: 14px; font-weight: 600; color: var(--blue); }
+.guide-owner { font-size: .8rem; color: var(--muted); margin: 6px 0 0; }
+.guide { font-size: 1.04rem; line-height: 1.7; }
+.guide h1, .guide h2, .guide h3 { color: var(--blue); margin: 1.4em 0 .5em; line-height: 1.3; }
+.guide h1 { font-size: 1.6rem; } .guide h2 { font-size: 1.35rem; } .guide h3 { font-size: 1.12rem; }
+.guide p { margin: 0 0 1em; line-height: 1.7; }
+.guide ul, .guide ol { padding-left: 1.3em; margin: 0 0 1em; }
+.guide li { margin: .3em 0; }
+.guide a { color: var(--brand); text-decoration: underline; }
+.guide blockquote { margin: 1em 0; padding: 4px 16px; border-left: 4px solid var(--brand); color: #444; background: #fff; border-radius: 0 10px 10px 0; }
+.guide hr { border: 0; border-top: 1px solid var(--line); margin: 1.6em 0; }
+.guide code { background: #f1eff3; padding: 1px 6px; border-radius: 6px; font-size: .9em; }
+.guide-code { background: #2b2b2b; color: #f5f4f7; padding: 14px 16px; border-radius: 12px; white-space: pre-wrap; word-break: break-word; }
+.guide-code code { background: none; padding: 0; color: inherit; }
+.guide-callout { display: flex; gap: 12px; background: #fff7f2; border: 1px solid #fedabf; border-radius: 12px; padding: 14px 16px; margin: 1em 0; }
+.guide-callout-icon { font-size: 1.3rem; line-height: 1.4; }
+.guide-callout p:last-child { margin-bottom: 0; }
+.guide-toggle { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; margin: 1em 0; }
+.guide-toggle summary { cursor: pointer; font-weight: 600; }
+.guide-todo { display: flex; gap: 8px; align-items: flex-start; font-weight: 400; margin: .3em 0; }
+.guide-figure { margin: 1.2em 0; }
+.guide-figure img { max-width: 100%; height: auto; border-radius: 12px; display: block; }
+.guide-figure figcaption { font-size: .85rem; color: var(--muted); margin-top: 6px; text-align: center; }
+.guide-video { position: relative; padding-top: 56.25%; margin: 1.2em 0; border-radius: 12px; overflow: hidden; background: #000; }
+.guide-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.guide-table { overflow-x: auto; margin: 1em 0; }
+.guide-table table { background: #fff; border-radius: 12px; }
+.guide-table th { background: var(--bg); color: var(--ink); }
+.guide-bookmark { word-break: break-all; }
+.guide-nav { display: flex; justify-content: space-between; gap: 12px; margin-top: 36px; flex-wrap: wrap; }
+.guide-nav .btn { max-width: 100%; white-space: normal; text-align: left; }
+
+/* Terbitkan panduan */
+.publish-list { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 8px; }
+.publish-list li { display: flex; gap: 10px; align-items: flex-start; }
+.publish-icon { width: 22px; flex: none; text-align: center; font-weight: 700; }
+.publish-ok .publish-icon { color: #166534; }
+.publish-amaran .publish-icon { color: #b45309; }
+.publish-ralat .publish-icon { color: #991b1b; }
+.publish-sama .publish-icon, .publish-menunggu .publish-icon { color: var(--muted); }
+.publish .alert { margin-top: 12px; }

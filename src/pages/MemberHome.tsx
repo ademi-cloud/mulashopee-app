@@ -26,9 +26,9 @@ export default function MemberHome() {
           <h3 className="mt-sm">Mula jual di Shopee</h3>
           <p className="muted">{free} video & ebook asas, termasuk cara guna marketing tools Shopee.</p>
         </Link>
-        <Link to="/ahli/ebook" className="card card-link">
-          <h3>Ebook & Template</h3>
-          <p className="muted">Senarai semak, template dan kalkulator untung.</p>
+        <Link to="/ahli/panduan" className="card card-link">
+          <h3>Panduan</h3>
+          <p className="muted">Panduan bertulis langkah demi langkah, sentiasa dikemas kini ikut perubahan Shopee.</p>
         </Link>
       </div>
 

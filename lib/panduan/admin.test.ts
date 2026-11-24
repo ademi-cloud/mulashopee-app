@@ -1,0 +1,81 @@
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { requireAdmin } from './admin'
+
+const env = { SUPABASE_URL: 'https://sb.test', SUPABASE_SERVICE_ROLE_KEY: 'sb_secret_x' }
+const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status })
+const req = (token?: string) => new Request('https://app/api/panduan/senarai', { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+
+afterEach(() => vi.unstubAllGlobals())
+
+describe('requireAdmin', () => {
+  it('returns a clear 500 when Supabase secrets are missing in this environment', async () => {
+    const r = await requireAdmin(req('t'), { SUPABASE_URL: '', SUPABASE_SERVICE_ROLE_KEY: undefined as unknown as string })
+    expect(r.ok).toBe(false)
+    if (!r.ok) {
+      expect(r.response.status).toBe(500)
+      expect(((await r.response.json()) as { ralat: string }).ralat).toContain('SUPABASE_SERVICE_ROLE_KEY')
+    }
+  })
+
+  it('rejects missing token', async () => {
+    const r = await requireAdmin(req(), env)
+    expect(r.ok).toBe(false)
+    if (!r.ok) expect(r.response.status).toBe(403)
+  })
+
+  it('rejects invalid token with a session message', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => json({ msg: 'bad jwt' }, 401)))
+    const r = await requireAdmin(req('t'), env)
+    expect(r.ok).toBe(false)
+    if (!r.ok) {
+      expect(r.response.status).toBe(403)
+      const ralat = ((await r.response.json()) as { ralat: string }).ralat
+      expect(ralat).toContain('Sesi log masuk')
+      expect(ralat).toContain('bad jwt')
+    }
+  })
+
+  it('flags a publishable key used as the service key', async () => {
+    const r = await requireAdmin(req('t'), { ...env, SUPABASE_SERVICE_ROLE_KEY: 'sb_publishable_abc' })
+    expect(r.ok).toBe(false)
+    if (!r.ok) {
+      expect(r.response.status).toBe(500)
+      expect(((await r.response.json()) as { ralat: string }).ralat).toContain('publishable')
+    }
+  })
+
+  it('reports the status when the profile lookup fails', async () => {
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => (url.includes('/auth/v1/user') ? json({ id: 'u1' }) : json({ message: 'Invalid API key' }, 401))))
+    const r = await requireAdmin(req('t'), env)
+    expect(r.ok).toBe(false)
+    if (!r.ok) {
+      expect(r.response.status).toBe(500)
+      expect(((await r.response.json()) as { ralat: string }).ralat).toContain('401')
+    }
+  })
+
+  it('rejects non-admin', async () => {
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => (url.includes('/auth/v1/user') ? json({ id: 'u1' }) : json([{ is_admin: false }]))))
+    const r = await requireAdmin(req('t'), env)
+    expect(r.ok).toBe(false)
+    if (!r.ok) {
+      expect(r.response.status).toBe(403)
+      expect(((await r.response.json()) as { ralat: string }).ralat).toContain('bukan admin')
+    }
+  })
+
+  it('explains when the profile cannot be found with the service key', async () => {
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => (url.includes('/auth/v1/user') ? json({ id: 'u1' }) : json([]))))
+    const r = await requireAdmin(req('t'), env)
+    expect(r.ok).toBe(false)
+    if (!r.ok) expect(((await r.response.json()) as { ralat: string }).ralat).toContain('Profil tidak dijumpai')
+  })
+
+  it('accepts admin', async () => {
+    const fetchMock = vi.fn(async (url: string) => (url.includes('/auth/v1/user') ? json({ id: 'u1' }) : json([{ is_admin: true }])))
+    vi.stubGlobal('fetch', fetchMock)
+    const r = await requireAdmin(req('t'), env)
+    expect(r).toEqual({ ok: true, userId: 'u1' })
+    expect(fetchMock.mock.calls[1][0]).toBe('https://sb.test/rest/v1/profiles?id=eq.u1&select=is_admin')
+  })
+})

@@ -8,7 +8,7 @@ export default function Lessons({ kind }: { kind: Lesson['kind'] }) {
 
   return (
     <>
-      <h1 className="page-title">{kind === 'video' ? 'Video' : 'Ebook & Template'}</h1>
+      <h1 className="page-title">{kind === 'video' ? 'Video' : kind === 'panduan' ? 'Panduan' : 'Ebook & Template'}</h1>
       {error && <p className="alert error mt">{error}</p>}
       {lessons === null && <p className="muted">Memuatkan…</p>}
       {lessons && items.length === 0 && <p className="muted">Belum ada kandungan.</p>}
