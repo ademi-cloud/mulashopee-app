@@ -8,6 +8,15 @@ const req = (token?: string) => new Request('https://app/api/panduan/senarai', {
 afterEach(() => vi.unstubAllGlobals())
 
 describe('requireAdmin', () => {
+  it('returns a clear 500 when Supabase secrets are missing in this environment', async () => {
+    const r = await requireAdmin(req('t'), { SUPABASE_URL: '', SUPABASE_SERVICE_ROLE_KEY: undefined as unknown as string })
+    expect(r.ok).toBe(false)
+    if (!r.ok) {
+      expect(r.response.status).toBe(500)
+      expect(((await r.response.json()) as { ralat: string }).ralat).toContain('SUPABASE_SERVICE_ROLE_KEY')
+    }
+  })
+
   it('rejects missing token', async () => {
     const r = await requireAdmin(req(), env)
     expect(r.ok).toBe(false)

@@ -7,6 +7,15 @@ export async function requireAdmin(
   request: Request,
   env: ServiceEnv,
 ): Promise<{ ok: true; userId: string } | { ok: false; response: Response }> {
+  if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
+    return {
+      ok: false,
+      response: Response.json(
+        { ralat: 'SUPABASE_URL atau SUPABASE_SERVICE_ROLE_KEY belum ditetapkan untuk environment ini di Cloudflare (semak Production dan Preview)' },
+        { status: 500 },
+      ),
+    }
+  }
   const token = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '').trim()
   if (!token) return { ok: false, response: forbidden() }
 
