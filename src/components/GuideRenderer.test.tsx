@@ -32,6 +32,13 @@ describe('GuideRenderer', () => {
     expect(out).toContain('rel="noreferrer"')
   })
 
+  it('callout uses a class for its tone, blue when missing', () => {
+    expect(html([{ t: 'callout', icon: '💡', tone: 'orange', spans: [{ text: 'Tip' }], children: [] }])).toContain('guide-callout guide-callout--orange')
+    expect(html([{ t: 'callout', icon: '✅', tone: 'blue', spans: [{ text: 'Buat' }], children: [] }])).toContain('guide-callout guide-callout--blue')
+    const old = { t: 'callout', icon: '✅', spans: [{ text: 'Lama' }], children: [] } as unknown as GuideBlock
+    expect(html([old])).toContain('guide-callout guide-callout--blue')
+  })
+
   it('ignores javascript: links', () => {
     const out = html([{ t: 'p', spans: [{ text: 'x', href: 'javascript:alert(1)' }] }])
     expect(out).not.toContain('javascript:')
@@ -40,7 +47,7 @@ describe('GuideRenderer', () => {
   it('renders table, callout, toggle, todo, image and code', () => {
     const out = html([
       { t: 'table', header: true, rows: [[[{ text: 'Fi' }], [{ text: 'Kadar' }]], [[{ text: 'A' }], [{ text: '5%' }]]] },
-      { t: 'callout', icon: '💡', spans: [{ text: 'Tip' }], children: [] },
+      { t: 'callout', icon: '💡', tone: 'orange', spans: [{ text: 'Tip' }], children: [] },
       { t: 'toggle', spans: [{ text: 'Buka' }], children: [{ t: 'p', spans: [{ text: 'Isi' }] }] },
       { t: 'todo', checked: true, spans: [{ text: 'Siap' }] },
       { t: 'image', src: 'https://sb/x.png', caption: [{ text: 'Kap' }], notionFile: false },

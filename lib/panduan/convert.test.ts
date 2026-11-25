@@ -96,7 +96,7 @@ describe('convertBlocks', () => {
     const { blocks, warnings } = convertBlocks([
       block('heading_2', { rich_text: [rt('Tajuk')] }),
       block('quote', { rich_text: [rt('Petikan')] }),
-      block('callout', { rich_text: [rt('Tip')], icon: { type: 'emoji', emoji: '💡' } }, [block('paragraph', { rich_text: [rt('Dalam')] })]),
+      block('callout', { rich_text: [rt('Tip')], icon: { type: 'emoji', emoji: '💡' }, color: 'orange_background' }, [block('paragraph', { rich_text: [rt('Dalam')] })]),
       block('toggle', { rich_text: [rt('Buka')] }, [block('paragraph', { rich_text: [rt('Isi')] })]),
       block('to_do', { rich_text: [rt('Buat')], checked: true }),
       block('code', { rich_text: [rt('x = 1')], language: 'javascript' }),
@@ -107,7 +107,7 @@ describe('convertBlocks', () => {
     expect(blocks).toEqual([
       { t: 'h2', spans: [{ text: 'Tajuk' }] },
       { t: 'quote', spans: [{ text: 'Petikan' }] },
-      { t: 'callout', icon: '💡', spans: [{ text: 'Tip' }], children: [{ t: 'p', spans: [{ text: 'Dalam' }] }] },
+      { t: 'callout', icon: '💡', tone: 'orange', spans: [{ text: 'Tip' }], children: [{ t: 'p', spans: [{ text: 'Dalam' }] }] },
       { t: 'toggle', spans: [{ text: 'Buka' }], children: [{ t: 'p', spans: [{ text: 'Isi' }] }] },
       { t: 'todo', checked: true, spans: [{ text: 'Buat' }] },
       { t: 'code', language: 'javascript', text: 'x = 1' },
@@ -137,6 +137,20 @@ describe('nested content', () => {
       block('heading_2', { rich_text: [rt('Soalan')], is_toggleable: true }, [block('paragraph', { rich_text: [rt('Jawapan')] })]),
     ])
     expect(blocks).toEqual([{ t: 'toggle', spans: [{ text: 'Soalan' }], children: [{ t: 'p', spans: [{ text: 'Jawapan' }] }] }])
+  })
+})
+
+describe('callout tone', () => {
+  it('orange and yellow backgrounds are orange; green, gray and default are blue', () => {
+    const tone = (color?: string) => {
+      const { blocks } = convertBlocks([block('callout', { rich_text: [rt('x')], icon: null, ...(color ? { color } : {}) })])
+      return (blocks[0] as { tone: string }).tone
+    }
+    expect(tone('orange_background')).toBe('orange')
+    expect(tone('yellow_background')).toBe('orange')
+    expect(tone('green_background')).toBe('blue')
+    expect(tone('gray_background')).toBe('blue')
+    expect(tone(undefined)).toBe('blue')
   })
 })
 
