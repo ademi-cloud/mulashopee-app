@@ -16,7 +16,8 @@ export type GuideBlock =
   | { t: 'h1' | 'h2' | 'h3' | 'p' | 'quote'; spans: Span[] }
   | { t: 'ul' | 'ol'; items: ListItem[] }
   | { t: 'todo'; checked: boolean; spans: Span[] }
-  | { t: 'callout'; icon: string | null; spans: Span[]; children: GuideBlock[] }
+  /** tone: oren (Tip Xpert) atau kelabu (Buat sekarang, nota, dll.) */
+  | { t: 'callout'; icon: string | null; tone: 'orange' | 'grey'; spans: Span[]; children: GuideBlock[] }
   | { t: 'toggle'; spans: Span[]; children: GuideBlock[] }
   | { t: 'code'; language: string; text: string }
   | { t: 'divider' }

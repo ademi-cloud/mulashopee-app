@@ -58,7 +58,7 @@ function Block({ b }: { b: GuideBlock }) {
       )
     case 'callout':
       return (
-        <div className="guide-callout">
+        <div className={`guide-callout guide-callout--${b.tone === 'orange' ? 'orange' : 'grey'}`}>
           {b.icon && <span className="guide-callout-icon">{b.icon}</span>}
           <div>
             <Spans spans={b.spans} />
