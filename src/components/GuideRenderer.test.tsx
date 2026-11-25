@@ -32,11 +32,11 @@ describe('GuideRenderer', () => {
     expect(out).toContain('rel="noreferrer"')
   })
 
-  it('callout uses a class for its tone, grey when missing', () => {
+  it('callout uses a class for its tone, blue when missing', () => {
     expect(html([{ t: 'callout', icon: '💡', tone: 'orange', spans: [{ text: 'Tip' }], children: [] }])).toContain('guide-callout guide-callout--orange')
-    expect(html([{ t: 'callout', icon: '✅', tone: 'grey', spans: [{ text: 'Buat' }], children: [] }])).toContain('guide-callout guide-callout--grey')
+    expect(html([{ t: 'callout', icon: '✅', tone: 'blue', spans: [{ text: 'Buat' }], children: [] }])).toContain('guide-callout guide-callout--blue')
     const old = { t: 'callout', icon: '✅', spans: [{ text: 'Lama' }], children: [] } as unknown as GuideBlock
-    expect(html([old])).toContain('guide-callout guide-callout--grey')
+    expect(html([old])).toContain('guide-callout guide-callout--blue')
   })
 
   it('ignores javascript: links', () => {

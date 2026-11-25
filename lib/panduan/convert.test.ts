@@ -141,16 +141,16 @@ describe('nested content', () => {
 })
 
 describe('callout tone', () => {
-  it('orange and yellow backgrounds are orange; green, gray and default are grey', () => {
+  it('orange and yellow backgrounds are orange; green, gray and default are blue', () => {
     const tone = (color?: string) => {
       const { blocks } = convertBlocks([block('callout', { rich_text: [rt('x')], icon: null, ...(color ? { color } : {}) })])
       return (blocks[0] as { tone: string }).tone
     }
     expect(tone('orange_background')).toBe('orange')
     expect(tone('yellow_background')).toBe('orange')
-    expect(tone('green_background')).toBe('grey')
-    expect(tone('gray_background')).toBe('grey')
-    expect(tone(undefined)).toBe('grey')
+    expect(tone('green_background')).toBe('blue')
+    expect(tone('gray_background')).toBe('blue')
+    expect(tone(undefined)).toBe('blue')
   })
 })
 

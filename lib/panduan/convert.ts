@@ -83,7 +83,7 @@ export function convertBlocks(blocks: NotionBlock[]): { blocks: GuideBlock[]; wa
       case 'callout': {
         const icon = d.icon as { type?: string; emoji?: string } | null | undefined
         const color = String(d.color ?? '')
-        const tone = color.startsWith('orange') || color.startsWith('yellow') ? 'orange' : 'grey'
+        const tone = color.startsWith('orange') || color.startsWith('yellow') ? 'orange' : 'blue'
         out.push({ t: 'callout', icon: icon?.type === 'emoji' ? (icon.emoji ?? null) : null, tone, spans: spansOf(b), children: inner(b) })
         break
       }
